@@ -5,7 +5,9 @@ import cors from "cors";
 const app = express();
 const port = process.env.SERVER_PORT;
 
+//body parser aggiunto
 app.use(express.json());
+//impostazione della cartella public per le immagini
 app.use(express.static("public"));
 
 // connessione con react /////
@@ -23,6 +25,10 @@ app.get("/", (req, res) => {
 });
 
 app.use("/shoes", router);
+
+//404
+
+//500 errore generico
 
 app.listen(port, () => {
   console.log(`la porta ${port} è aperta, chiudi fa freddo`);

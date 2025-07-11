@@ -11,8 +11,6 @@ const index = (req, res) => {
     }
 
     const shoes = result.map((curShoe) => {
-      console.log(curShoe);
-
       return {
         ...curShoe,
         // image: `${req.imagePath}/${curShoe.image}`,
@@ -29,10 +27,27 @@ const index = (req, res) => {
 
 //show
 const show = (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
 
-  res.json({
-    data: `pagina di una scarpa ${id}`,
+  const shoeRequest = `SELECT products.*
+                         FROM products
+                         WHERE products.id = ?;`;
+
+  connection.query(shoeRequest, [id], (err, result) => {
+    if (err) {
+      return res.status(404).json({
+        status: "404",
+        info: "Scarpa non trovata",
+      });
+    } else {
+      const shoeData = result[0];
+      res.status(200).json({
+        data: {
+          ...shoeData,
+          // image: `${req.imagePath}/${result.image}`,
+        },
+      });
+    }
   });
 };
 
