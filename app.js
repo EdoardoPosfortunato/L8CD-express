@@ -1,6 +1,8 @@
 import express from "express";
 import router from "./routers/shoes.js";
 import cors from "cors";
+import notFound from "./middleware/notFound.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 const port = process.env.SERVER_PORT;
@@ -27,8 +29,10 @@ app.get("/", (req, res) => {
 app.use("/shoes", router);
 
 //404
+app.use(notFound);
 
-//500 errore generico
+//500 e altri
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`la porta ${port} è aperta, chiudi fa freddo`);
