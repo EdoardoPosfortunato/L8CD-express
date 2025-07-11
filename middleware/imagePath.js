@@ -1,4 +1,9 @@
-const imagePath = (req, res ,next) => {
+const imagePath = (req, res, next) => {
+  const percorsoImmagine = `${req.protocol}://${req.get("host")}/images`;
+  req.imagePath = percorsoImmagine;
+  next();
+};
+
 
     const percorsoImmagine = `${req.protocol}://${req.get("host")}/images/shoes`;
     req.imagePath = percorsoImmagine;
@@ -7,3 +12,4 @@ const imagePath = (req, res ,next) => {
 }
 
 export default imagePath;
+

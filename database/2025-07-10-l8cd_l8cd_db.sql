@@ -177,3 +177,6 @@ INSERT INTO `coupons` (`code`, `description`, `discount_value`, `start_date`, `e
 ('FLASH30', 'Sconto lampo del 30% per 24 ore.', 30.00, '2025-06-20 00:00:00', '2025-06-21 23:59:59', 80.00, TRUE, NOW(), NOW()),
 ('LOYALTY15', 'Sconto fedeltà del 15% su ordini superiori a 70 euro.', 15.00, '2025-06-01 00:00:00', '2025-12-31 23:59:59', 70.00, TRUE, NOW(), NOW());
 
+
+
+
