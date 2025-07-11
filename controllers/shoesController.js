@@ -4,6 +4,7 @@ import imagePath from "../middleware/imagePath.js";
 
 //index
 const index = (req, res) => {
+
   let sql = "SELECT * from products";
   let params = [];
 
@@ -11,6 +12,8 @@ const index = (req, res) => {
     sql += " WHERE gender = ?";
     params.push(gender);
   }
+
+
 
   connection.query(sql, (err, result) => {
     if (err) {
