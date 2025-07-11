@@ -5,6 +5,7 @@ import imagePath from "../middleware/imagePath.js";
 //index
 const index = (req, res) => {
   const gender = req.query.gender;
+
   let sql = "SELECT * from products";
   let params = [];
 
