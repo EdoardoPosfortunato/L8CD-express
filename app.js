@@ -3,6 +3,7 @@ import router from "./routers/shoes.js";
 import cors from "cors";
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
+import imagePath from "./middleware/imagePath.js";
 
 const app = express();
 const port = process.env.SERVER_PORT;
@@ -26,7 +27,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/shoes", router);
+app.use("/shoes", imagePath, router);
 
 //404
 app.use(notFound);

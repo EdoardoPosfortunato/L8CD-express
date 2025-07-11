@@ -1,5 +1,6 @@
 import connection from "../db.js";
 import slugify from "slugify";
+import imagePath from "../middleware/imagePath.js";
 
 //index
 const index = (req, res) => {
@@ -13,7 +14,7 @@ const index = (req, res) => {
     const shoes = result.map((curShoe) => {
       return {
         ...curShoe,
-        // image: `${req.imagePath}/${curShoe.image}`,
+        image: curShoe.image ? `${req.imagePath}/${curShoe.image}` : null
       };
     });
 
@@ -44,7 +45,7 @@ const show = (req, res) => {
       res.status(200).json({
         data: {
           ...shoeData,
-          // image: `${req.imagePath}/${result.image}`,
+          image: shoeData.image ? `${req.imagePath}/${shoeData.image}` : null
         },
       });
     }
