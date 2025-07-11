@@ -1,6 +1,6 @@
 const imagePath = (req, res ,next) => {
 
-    const percorsoImmagine = `${req.protocol}://${req.get("host")}/images`;
+    const percorsoImmagine = `${req.protocol}://${req.get("host")}/images/shoes`;
     req.imagePath = percorsoImmagine;
     next();
 
