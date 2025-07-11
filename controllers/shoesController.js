@@ -4,9 +4,17 @@ import imagePath from "../middleware/imagePath.js";
 
 //index
 const index = (req, res) => {
-  const sql = "SELECT * from products";
+  const gender = req.query.gender;
 
-  connection.query(sql, (err, result) => {
+  let sql = "SELECT * from products";
+  let params = [];
+
+  if (gender) {
+    sql += " WHERE gender = ?";
+    params.push(gender);
+  }
+
+  connection.query(sql, params, (err, result) => {
     if (err) {
       return next(new Error(err));
     }
@@ -19,7 +27,7 @@ const index = (req, res) => {
     });
 
     res.status(200).json({
-      info: "stampo le scarpe",
+      info: gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
       totalcount: result.length,
       data: shoes,
     });
