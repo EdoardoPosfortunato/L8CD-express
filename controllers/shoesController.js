@@ -3,8 +3,27 @@ import slugify from "slugify";
 
 //index
 const index = (req, res) => {
-  res.json({
-    data: "pagina delle scarpe",
+  const sql = "SELECT * from products";
+
+  connection.query(sql, (err, result) => {
+    if (err) {
+      return next(new Error(err));
+    }
+
+    const shoes = result.map((curShoe) => {
+      console.log(curShoe);
+
+      return {
+        ...curShoe,
+        // image: `${req.imagePath}/${curShoe.image}`,
+      };
+    });
+
+    res.status(200).json({
+      info: "stampo le scarpe",
+      totalcount: result.length,
+      data: shoes,
+    });
   });
 };
 
