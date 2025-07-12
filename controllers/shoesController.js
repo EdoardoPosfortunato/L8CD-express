@@ -5,11 +5,16 @@ import imagePath from "../middleware/imagePath.js";
 //index
 const index = (req, res) => {
   const gender = req.query.gender;
+  const isNew = req.query.isNew;
 
   let sql = "SELECT * from products";
   let params = [];
+  
 
-  if (gender) {
+  if (isNew === "true") {
+    sql += " WHERE price >= ?";
+    params.push(160);
+  } else if (gender) {
     sql += " WHERE gender = ?";
     params.push(gender);
   }
@@ -27,7 +32,12 @@ const index = (req, res) => {
     });
 
     res.status(200).json({
-      info: gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
+      info:
+        isNew === "true"
+        ? "Scarpe novità (prezzo ≥ 160)"
+        : gender
+        ? `Scarpe per genere: ${gender}`
+        : "Tutte le scarpe",
       totalcount: result.length,
       data: shoes,
     });
