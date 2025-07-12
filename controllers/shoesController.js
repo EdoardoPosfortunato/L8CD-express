@@ -3,7 +3,7 @@ import slugify from "slugify";
 import imagePath from "../middleware/imagePath.js";
 
 //index
-const index = (req, res) => {
+const index = (req, res, next) => {
   const gender = req.query.gender;
   const isNew = req.query.isNew;
 
