@@ -8,11 +8,6 @@ const index = (req, res, next) => {
   let conditions = [];
   let params = [];
 
-  if (isNew === "true") {
-    conditions.push("price >= ?");
-    params.push(160);
-  }
-
   if (gender) {
     conditions.push("gender = ?");
     params.push(gender);
@@ -33,6 +28,11 @@ const index = (req, res, next) => {
     params.push(maxPrice);
   }
 
+  if (isNew === "true") {
+    conditions.push("DATE(created_at) >= ?");
+    params.push("2025-06-06");
+  }
+
   if (conditions.length > 0) {
     sql += " WHERE " + conditions.join(" AND ");
   }
@@ -48,11 +48,13 @@ const index = (req, res, next) => {
     res.status(200).json({
       info:
         isNew === "true"
-          ? "Scarpe novità (prezzo ≥ 160)"
+          ? "Aggiunti di recente"
+          : gender === "offerte"
+          ? "Scarpe in offerta (prezzo < 100)"
           : gender
           ? `Scarpe per genere: ${gender}`
           : "Tutte le scarpe",
-      totalcount: result.length,
+      totalcount: shoes.length,
       data: shoes,
     });
   });
