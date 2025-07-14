@@ -1,22 +1,44 @@
 import connection from "../db.js";
 import slugify from "slugify";
-import imagePath from "../middleware/imagePath.js";
 
 //index
 const index = (req, res, next) => {
   const gender = req.query.gender;
   const isNew = req.query.isNew;
+  const name = req.query.name;
+  const brand = req.query.brand;
 
   let sql = "SELECT * from products";
   let params = [];
-  
+  let conditions = [];
 
+  // filtro per per prezzo
   if (isNew === "true") {
-    sql += " WHERE price >= ?";
+    conditions.push("price >= ?");
     params.push(160);
-  } else if (gender) {
-    sql += " WHERE gender = ?";
+  }
+
+  // filtro per genere
+  if (gender) {
+    conditions.push("gender = ?");
     params.push(gender);
+  }
+
+  // filtro per nome. Usiamo il like per far si che i filtri sono anche parziali
+  if (name) {
+    conditions.push("name LIKE ?");
+    params.push(`%${name}%`);
+  }
+
+  // filtro per marca delle scarpe. Usiamo il like per far si che i filtri sono anche parziali
+  if (brand) {
+    conditions.push("brand LIKE ?");
+    params.push(`%${brand}%`);
+  }
+
+  // condizioni finali dove vengono sommate tutte le condizioni inserite prima
+  if (conditions.length > 0) {
+    sql += " WHERE " + conditions.join(" AND ");
   }
 
   connection.query(sql, params, (err, result) => {
@@ -27,17 +49,12 @@ const index = (req, res, next) => {
     const shoes = result.map((curShoe) => {
       return {
         ...curShoe,
-        image: curShoe.image ? `${req.imagePath}/${curShoe.image}` : null
+        image: curShoe.image ? `${req.imagePath}/${curShoe.image}` : null,
       };
     });
 
     res.status(200).json({
-      info:
-        isNew === "true"
-        ? "Scarpe novità (prezzo ≥ 160)"
-        : gender
-        ? `Scarpe per genere: ${gender}`
-        : "Tutte le scarpe",
+      info: isNew === "true" ? "Scarpe novità (prezzo ≥ 160)" : gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
       totalcount: result.length,
       data: shoes,
     });
@@ -63,7 +80,7 @@ const show = (req, res) => {
       res.status(200).json({
         data: {
           ...shoeData,
-          image: shoeData.image ? `${req.imagePath}/${shoeData.image}` : null
+          image: shoeData.image ? `${req.imagePath}/${shoeData.image}` : null,
         },
       });
     }
