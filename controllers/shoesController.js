@@ -46,14 +46,7 @@ const index = (req, res, next) => {
     }));
 
     res.status(200).json({
-      info:
-        isNew === "true"
-          ? "Aggiunti di recente"
-          : gender === "offerte"
-          ? "Scarpe in offerta (prezzo < 100)"
-          : gender
-          ? `Scarpe per genere: ${gender}`
-          : "Tutte le scarpe",
+      info: isNew === "true" ? "Aggiunti di recente" : gender === "offerte" ? "Scarpe in offerta (prezzo < 100)" : gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
       totalcount: shoes.length,
       data: shoes,
     });
@@ -82,9 +75,69 @@ const show = (req, res) => {
   });
 };
 
+const storeInvoice = (req, res) => {
+  const {
+    custom_name, custom_email, custom_address, total_amount, payment_method,
+    shipping_address, shipping_method, tracking_number, coupon_id, status,
+    products  // <-- array di prodotti [{product_id, quantity, price}, ...]
+  } = req.body;
+
+  const sqlInvoice = `
+    INSERT INTO invoices (
+      custom_name,
+      custom_email,
+      custom_address,
+      total_amount,
+      payment_method,
+      shipping_address,
+      shipping_method,
+      tracking_number,
+      coupon_id, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  const valuesInvoice = [custom_name, custom_email, custom_address, total_amount, payment_method,
+    shipping_address, shipping_method, tracking_number, coupon_id, status];
+
+  connection.query(sqlInvoice, valuesInvoice, (err, results) => {
+    if (err) {
+      console.error("Errore inserimento ordine:", err);
+      return res.status(500).json({ error: "Errore server durante l'inserimento dell'ordine" });
+    }
+
+    const orderId = results.insertId;
+
+    // Ora inseriamo i prodotti nella tabella ponte (es. invoice_items)
+    const sqlItems = `
+      INSERT INTO products_invoices (
+      invoice_id,
+      product_id,
+      quantity)
+      VALUES ?
+    `;
+
+    // Creiamo array per inserimento multiplo [ [orderId, product_id, qty, price], ... ]
+    const itemsValues = products.map(p => [orderId, p.product_id, p.quantity]);
+
+    connection.query(sqlItems, [itemsValues], (err2) => {
+      if (err2) {
+        console.error("Errore inserimento prodotti:", err2);
+        return res.status(500).json({ error: "Errore server durante l'inserimento dei prodotti" });
+      }
+
+      return res.status(201).json({
+        message: "Ordine e prodotti salvati con successo",
+        order_id: orderId,
+      });
+    });
+  });
+};
+
+
 const shoesController = {
   index,
   show,
+  storeInvoice,
 };
 
 export default shoesController;
