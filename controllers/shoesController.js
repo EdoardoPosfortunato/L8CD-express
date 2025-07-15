@@ -79,7 +79,7 @@ const storeInvoice = (req, res) => {
   const { custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status } = req.body;
 
   const sql = `
-    INSERT INTO orders (
+    INSERT INTO invoices (
       custom_name,
       custom_email,
       custom_address,
