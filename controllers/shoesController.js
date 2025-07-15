@@ -77,9 +77,17 @@ const show = (req, res) => {
 
 const storeInvoice = (req, res) => {
   const {
-    custom_name, custom_email, custom_address, total_amount, payment_method,
-    shipping_address, shipping_method, tracking_number, coupon_id, status,
-    products  // <-- array di prodotti [{product_id, quantity, price}, ...]
+    custom_name,
+    custom_email,
+    custom_address,
+    total_amount,
+    payment_method,
+    shipping_address,
+    shipping_method,
+    tracking_number,
+    coupon_id,
+    status,
+    products, // <-- array di prodotti [{product_id, quantity, price}, ...]
   } = req.body;
 
   const sqlInvoice = `
@@ -96,8 +104,7 @@ const storeInvoice = (req, res) => {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
 
-  const valuesInvoice = [custom_name, custom_email, custom_address, total_amount, payment_method,
-    shipping_address, shipping_method, tracking_number, coupon_id, status];
+  const valuesInvoice = [custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status];
 
   connection.query(sqlInvoice, valuesInvoice, (err, results) => {
     if (err) {
@@ -117,7 +124,7 @@ const storeInvoice = (req, res) => {
     `;
 
     // Creiamo array per inserimento multiplo [ [orderId, product_id, qty, price], ... ]
-    const itemsValues = products.map(p => [orderId, p.product_id, p.quantity]);
+    const itemsValues = products.map((p) => [orderId, p.product_id, p.quantity]);
 
     connection.query(sqlItems, [itemsValues], (err2) => {
       if (err2) {
@@ -132,7 +139,6 @@ const storeInvoice = (req, res) => {
     });
   });
 };
-
 
 const shoesController = {
   index,
