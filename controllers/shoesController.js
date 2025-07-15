@@ -46,14 +46,7 @@ const index = (req, res, next) => {
     }));
 
     res.status(200).json({
-      info:
-        isNew === "true"
-          ? "Aggiunti di recente"
-          : gender === "offerte"
-          ? "Scarpe in offerta (prezzo < 100)"
-          : gender
-          ? `Scarpe per genere: ${gender}`
-          : "Tutte le scarpe",
+      info: isNew === "true" ? "Aggiunti di recente" : gender === "offerte" ? "Scarpe in offerta (prezzo < 100)" : gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
       totalcount: shoes.length,
       data: shoes,
     });
@@ -82,22 +75,35 @@ const show = (req, res) => {
   });
 };
 
-
 const storeInvoice = (req, res) => {
-  const { custom_name, status } = req.body;
+  const { custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status } = req.body;
 
   const sql = `
-  INSERT INTO invoices (custom_name, status)
-  VALUES (?, ?);
+    INSERT INTO orders (
+      custom_name,
+      custom_email,
+      custom_address,
+      total_amount,
+      payment_method,
+      shipping_address,
+      shipping_method,
+      tracking_number,
+      coupon_id,
+      status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
-  connection.query(sql, [custom_name, status], (err, results) => {
-        if (err) {
-      console.error("Errore inserimento:", err);
-      return res.status(500).json({ error: "Errore server durante l'inserimento" });
+
+  const values = [custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status];
+
+  connection.query(sql, values, (err, results) => {
+    if (err) {
+      console.error("Errore inserimento ordine:", err);
+      return res.status(500).json({ error: "Errore server durante l'inserimento dell'ordine" });
     }
+
     return res.status(201).json({
-      message: "Fattura salvata con successo",
-      invoice_id: results.insertId,
+      message: "Ordine salvato con successo",
+      order_id: results.insertId,
     });
   });
 };
