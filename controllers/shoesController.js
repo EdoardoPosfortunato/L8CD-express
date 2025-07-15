@@ -82,9 +82,30 @@ const show = (req, res) => {
   });
 };
 
+
+const storeInvoice = (req, res) => {
+  const { custom_name, status } = req.body;
+
+  const sql = `
+  INSERT INTO invoices (custom_name, status)
+  VALUES (?, ?);
+  `;
+  connection.query(sql, [custom_name, status], (err, results) => {
+        if (err) {
+      console.error("Errore inserimento:", err);
+      return res.status(500).json({ error: "Errore server durante l'inserimento" });
+    }
+    return res.status(201).json({
+      message: "Fattura salvata con successo",
+      invoice_id: results.insertId,
+    });
+  });
+};
+
 const shoesController = {
   index,
   show,
+  storeInvoice,
 };
 
 export default shoesController;

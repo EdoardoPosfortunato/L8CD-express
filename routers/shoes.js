@@ -7,5 +7,7 @@ const router = express.Router();
 router.get("/", shoesController.index);
 //show
 router.get("/:id", shoesController.show);
+//store invoice
+router.post("/store", shoesController.storeInvoice);
 
 export default router;
