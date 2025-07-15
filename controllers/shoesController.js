@@ -2,15 +2,15 @@ import connection from "../db.js";
 import slugify from "slugify";
 
 const index = (req, res, next) => {
-  const { gender, isNew, minPrice, maxPrice, brand, color, query } = req.query;
+  const { gender, isNew, minPrice, maxPrice, brand, color, q } = req.query;
 
   let sql = "SELECT * FROM products";
   let conditions = [];
   let params = [];
 
-  if (query) {
-    sql += " WHERE name LIKE ? OR brand LIKE ? OR description LIKE ?";
-    const searchTerm = `%${query}%`;
+  if (q) {
+    conditions.push("(name LIKE ? OR brand LIKE ? OR description LIKE ?)");
+    const searchTerm = `%${q}%`;
     params.push(searchTerm, searchTerm, searchTerm);
   }
 
