@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./routers/shoes.js";
+import mailRouter from "./routers/mailRouter.js";
 import cors from "cors";
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -28,6 +29,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/shoes", imagePath, router);
+
+app.use("/api/newsletter", mailRouter);
 
 //404
 app.use(notFound);
