@@ -22,7 +22,7 @@ const subscribe = async (req, res) => {
 };
 
 const checkout = async (req, res) => {
-  const { email, cartItems } = req.body;
+  const { email, cartItems, name, total } = req.body;
 
   const itemList = cartItems.map((item) => `<li>${item.name} x${item.quantity}</li>`).join("");
 
@@ -35,6 +35,7 @@ const checkout = async (req, res) => {
         <p>Grazie per aver effettuato l'ordine da noi. Ecco un riepilogo:</p>
         <ul>${itemList}</ul>
         <p>A presto!</p>
+        <p>Totale: ${total}</p>
       `,
     });
 
