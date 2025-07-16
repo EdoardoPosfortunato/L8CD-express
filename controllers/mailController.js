@@ -19,4 +19,23 @@ const subscribe = async (req, res) => {
   }
 };
 
-export default { subscribe };
+const checkout = async (req, res) => {
+  const { email, cartItems } = req.body;
+
+  try {
+    await transport.sendMail({
+      from: '"Il tuo ordine da L8CD" <ordini@l8cd.it>',
+      to: email,
+      subject: "Ordine Andato a buon fine",
+      text: "Grazie per aver effettuato l'ordine da noi. A presto",
+      html: `<p>Grazie per aver effettuato l'ordine da noi. A presto</p>`,
+    });
+
+    res.status(200).json({ message: "Ordine effettuato con successo (test)" });
+  } catch (error) {
+    console.error("Errore invio ordine:", error);
+    res.status(500).json({ message: "Ci sono dei problemi con il tuo ordine" });
+  }
+};
+
+export default { subscribe, checkout };
