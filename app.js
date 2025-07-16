@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/shoes", imagePath, router);
 
-app.use("/api/newsletter", mailRouter);
+app.use("/api/mail", mailRouter);
 
 //404
 app.use(notFound);
