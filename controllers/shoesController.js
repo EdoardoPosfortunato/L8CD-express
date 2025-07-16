@@ -72,10 +72,10 @@ const index = (req, res, next) => {
 };
 
 const show = (req, res) => {
-  const id = req.params.id;
-  const shoeRequest = `SELECT * FROM products WHERE id = ?`;
+  const { id, slug } = req.params;
+  const shoeRequest = `SELECT * FROM products WHERE slug = ?`;
 
-  connection.query(shoeRequest, [id], (err, result) => {
+  connection.query(shoeRequest, [slug], (err, result) => {
     if (err || result.length === 0) {
       return res.status(404).json({
         status: "404",
