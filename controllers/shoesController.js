@@ -1,5 +1,4 @@
 import connection from "../db.js";
-import slugify from "slugify";
 
 const index = (req, res, next) => {
   const { gender, isNew, minPrice, maxPrice, brand, color, q } = req.query;
@@ -57,14 +56,7 @@ const index = (req, res, next) => {
     }));
 
     res.status(200).json({
-      info:
-        isNew === "true"
-          ? "Aggiunti di recente"
-          : gender === "offerte"
-          ? "Scarpe in offerta (prezzo < 100)"
-          : gender
-          ? `Scarpe per genere: ${gender}`
-          : "Tutte le scarpe",
+      info: isNew === "true" ? "Aggiunti di recente" : gender === "offerte" ? "Scarpe in offerta (prezzo < 100)" : gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
       totalcount: shoes.length,
       data: shoes,
     });
@@ -122,25 +114,12 @@ const storeInvoice = (req, res) => {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
 
-  const valuesInvoice = [
-    custom_name,
-    custom_email,
-    custom_address,
-    total_amount,
-    payment_method,
-    shipping_address,
-    shipping_method,
-    tracking_number,
-    coupon_id,
-    status,
-  ];
+  const valuesInvoice = [custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status];
 
   connection.query(sqlInvoice, valuesInvoice, (err, results) => {
     if (err) {
       console.error("Errore inserimento ordine:", err);
-      return res
-        .status(500)
-        .json({ error: "Errore server durante l'inserimento dell'ordine" });
+      return res.status(500).json({ error: "Errore server durante l'inserimento dell'ordine" });
     }
 
     const orderId = results.insertId;
@@ -155,18 +134,12 @@ const storeInvoice = (req, res) => {
     `;
 
     // Creiamo array per inserimento multiplo [ [orderId, product_id, qty, price], ... ]
-    const itemsValues = products.map((p) => [
-      orderId,
-      p.product_id,
-      p.quantity,
-    ]);
+    const itemsValues = products.map((p) => [orderId, p.product_id, p.quantity]);
 
     connection.query(sqlItems, [itemsValues], (err2) => {
       if (err2) {
         console.error("Errore inserimento prodotti:", err2);
-        return res
-          .status(500)
-          .json({ error: "Errore server durante l'inserimento dei prodotti" });
+        return res.status(500).json({ error: "Errore server durante l'inserimento dei prodotti" });
       }
 
       return res.status(201).json({
