@@ -10,43 +10,34 @@ import { GoogleGenAI } from "@google/genai";
 
 const app = express();
 const port = process.env.SERVER_PORT;
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-//body parser aggiunto
 app.use(express.json());
-//impostazione della cartella public per le immagini
 app.use(express.static("public"));
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
+app.use(cors({ origin: process.env.FE_URL }));
 
-// connessione con react /////
-app.use(
-  cors({
-    origin: process.env.FE_URL,
-  })
-);
-
-/////////////////////////////
 app.get("/", (req, res) => {
-  res.json({
-    data: "benvenuto nel API delle scarpe",
-  });
+  res.json({ data: "Benvenuto nell'API delle scarpe" });
 });
 
-app.post('/api/chat', async (req, res) => {
-  const { message } = req.body
-
+app.post("/api/chat", async (req, res) => {
+  const { message } = req.body;
 
   try {
-
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
 
+    const systemPrompt = `Sei un assistente virtuale specializzato in scarpe. Rispondi solo a domande su scarpe, calzature, modelli, acquisti, resi, spedizioni o argomenti correlati. Se la domanda non riguarda le scarpe, rispondi gentilmente che puoi solo parlare di scarpe.`;
 
     const response = await ai.models.generateContentStream({
-      model: 'gemini-2.0-flash-001',
-    contents: [{ role: "user", parts: [{ text: message }] }],
+      model: "gemini-2.0-flash-001",
+      contents: [
+        { role: "user", parts: [{ text: systemPrompt }] },
+        { role: "user", parts: [{ text: message }] }
+      ]
     });
 
     for await (const chunk of response) {
@@ -56,23 +47,17 @@ app.post('/api/chat', async (req, res) => {
     }
 
     res.end();
-
-    } catch (error) {
-      console.error('Error', error.message);
-      res.status(500).json({error: 'Something went wrong'})
-    }
-})
+  } catch (error) {
+    console.error("Error", error.message);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
 
 app.use("/shoes", imagePath, router);
-
 app.use("/api/mail", mailRouter);
-
-//404
 app.use(notFound);
-
-//500 e altri
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`la porta ${port} è aperta, chiudi fa freddo`);
+  console.log(`La porta ${port} è aperta, chiudi fa freddo`);
 });
