@@ -14,43 +14,84 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 app.use(express.json());
 app.use(express.static("public"));
-
 app.use(cors({ origin: process.env.FE_URL }));
 
-app.get("/", (req, res) => {
-  res.json({ data: "Benvenuto nell'API delle scarpe" });
-});
+// In-memory chat history (DEMO: valido solo per 1 utente)
+let chatHistory = [
+  {
+    role: "user",
+    parts: [
+      {
+        text: `Sei un assistente virtuale specializzato in scarpe. Rispondi solo a domande su scarpe, calzature, modelli, acquisti, resi, spedizioni o argomenti correlati. Se la domanda non riguarda le scarpe, rispondi gentilmente che puoi solo parlare di scarpe.`,
+      },
+    ],
+  },
+];
 
 app.post("/api/chat", async (req, res) => {
   const { message } = req.body;
 
   try {
+    // Aggiunge l'input dell'utente allo storico
+    chatHistory.push({ role: "user", parts: [{ text: message }] });
+
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
 
-    const systemPrompt = `Sei un assistente virtuale specializzato in scarpe. Rispondi solo a domande su scarpe, calzature, modelli, acquisti, resi, spedizioni o argomenti correlati. Se la domanda non riguarda le scarpe, rispondi gentilmente che puoi solo parlare di scarpe.`;
-
     const response = await ai.models.generateContentStream({
       model: "gemini-2.0-flash-001",
-      contents: [
-        { role: "user", parts: [{ text: systemPrompt }] },
-        { role: "user", parts: [{ text: message }] }
-      ]
+      contents: chatHistory,
     });
+
+    let modelResponse = "";
 
     for await (const chunk of response) {
       const text = chunk.text || "";
-      console.log("Chunk:", text);
+      modelResponse += text;
       res.write(text);
     }
 
+    // Aggiunge la risposta del modello allo storico
+    chatHistory.push({ role: "model", parts: [{ text: modelResponse }] });
+
     res.end();
   } catch (error) {
-    console.error("Error", error.message);
-    res.status(500).json({ error: "Something went wrong" });
+    console.error("Errore nella chat:", error.message);
+    res.status(500).json({ error: "Errore durante la conversazione" });
   }
+});
+
+// Reset manuale per test/debug
+app.post("/api/chat/reset", (req, res) => {
+  chatHistory = [
+    {
+      role: "user",
+      parts: [
+        {
+          text: `Sei un assistente virtuale specializzato in scarpe per il sito e-commerce L8CD
+                Il tuo compito è aiutare i clienti con informazioni su:
+                - modelli di scarpe disponibili,
+                - taglie,
+                - colori,
+                - materiali,
+                - consigli per acquisti,
+                - spedizioni e resi,
+                - offerte e sconti,
+                - brand trattati,
+                - disponibilità a catalogo.
+                Mantieni un tono cordiale, professionale ma accessibile, come se fossi un commesso esperto ma amichevole di un negozio di scarpe moderno.
+                ⚠️ Non rispondere a domande che non riguardano le scarpe o gli acquisti su L8CD. Se ricevi una domanda off-topic (es. meteo, politica, attualità), rispondi educatamente che puoi parlare solo di scarpe o                servizi del sito L8CD.
+                Il sito si chiama L8CD (si pronuncia "ele-otto-ci-di") ed è specializzato in sneakers, calzature da uomo, donna e bambino, sia casual che eleganti. Non hai accesso in tempo reale al catalogo, ma puoi                 rispondere in modo utile e informativo.
+                Se possibile, proponi suggerimenti o alternative in base alla richiesta.
+                Sei sempre pronto ad aiutare in tutto ciò che riguarda scarpe e acquisti su L8CD.
+`,
+        },
+      ],
+    },
+  ];
+  res.json({ message: "Conversazione resettata" });
 });
 
 app.use("/shoes", imagePath, router);
@@ -59,5 +100,5 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`La porta ${port} è aperta, chiudi fa freddo`);
+  console.log(`Server attivo sulla porta ${port}`);
 });
