@@ -5,6 +5,7 @@ import cors from "cors";
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
 import imagePath from "./middleware/imagePath.js";
+import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 
 const app = express();
@@ -45,7 +46,7 @@ app.post('/api/chat', async (req, res) => {
 
     const response = await ai.models.generateContentStream({
       model: 'gemini-2.0-flash-001',
-      contents: message,
+    contents: [{ role: "user", parts: [{ text: message }] }],
     });
 
     for await (const chunk of response) {
