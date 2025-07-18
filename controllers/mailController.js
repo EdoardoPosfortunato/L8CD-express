@@ -22,40 +22,27 @@ const subscribe = async (req, res) => {
   }
 };
 
-const checkoutClient = async (req, res) => {
+const checkout = async (req, res) => {
   const { email, cartItems, name, total } = req.body;
 
   const itemList = cartItems.map((item) => `<li>${item.name} x${item.quantity}</li>`).join("");
 
   try {
     await ClientTransporter.sendMail({
-      from: "<admin@l8cd.it>",
+      from: "<sales@l8cd.it>",
       to: email,
       subject: "Ordine Andato a buon fine",
       html: `
-        <p>Ciao ${name}! Grazie per aver effettuato l'ordine da noi. Ecco un riepilogo:</p>
-        <ul>${itemList}</ul>
-        <p>A presto!</p>
-        <p>Totale: ${total}€</p>
-      `,
+      <p>Ciao ${name}! Grazie per aver effettuato l'ordine da noi. Ecco un riepilogo:</p>
+      <ul>${itemList}</ul>
+      <p>A presto!</p>
+      <p>Totale: ${total}€</p>
+        `,
     });
 
-    res.status(200).json({ message: "Email di conferma ordine inviata" });
-  } catch (error) {
-    console.error("Errore invio ordine:", error);
-    res.status(500).json({ message: "Problema nell'invio della conferma ordine" });
-  }
-};
-
-const checkoutAdmin = async (req, res) => {
-  const { email, cartItems, name, total } = req.body;
-
-  const itemList = cartItems.map((item) => `<li>${item.name} x${item.quantity}</li>`).join("");
-
-  try {
     await AdminTransporter.sendMail({
-      from: "<admin@l8cd.it>",
-      to: email,
+      from: '"Ordini L8CD" <no-reply@l8cd.it>',
+      to: process.env.ADMIN_MAIL,
       subject: "Nuovo ordine",
       html: `
         <p>Hai rcevuto un nuovo ordine</p>
@@ -65,11 +52,11 @@ const checkoutAdmin = async (req, res) => {
       `,
     });
 
-    res.status(200).json({ message: "Email di conferma ordine inviata" });
+    res.status(200).json({ message: "Email inviate con successo" });
   } catch (error) {
     console.error("Errore invio ordine:", error);
     res.status(500).json({ message: "Problema nell'invio della conferma ordine" });
   }
 };
 
-export default { subscribe, checkoutClient, checkoutAdmin };
+export default { subscribe, checkout };
