@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const transport = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
@@ -9,4 +9,4 @@ const transport = nodemailer.createTransport({
   },
 });
 
-export default transport;
+export default transporter;
