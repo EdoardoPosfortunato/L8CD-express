@@ -35,7 +35,7 @@ const checkout = async (req, res) => {
         <p>Grazie per aver effettuato l'ordine da noi. Ecco un riepilogo:</p>
         <ul>${itemList}</ul>
         <p>A presto!</p>
-        <p>Totale: ${total}</p>
+        <p>Totale: ${total}€</p>
       `,
     });
 
