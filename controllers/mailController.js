@@ -29,7 +29,7 @@ const checkoutClient = async (req, res) => {
 
   try {
     await ClientTransporter.sendMail({
-      from: '"Il tuo ordine da L8CD" <ordini@l8cd.it>',
+      from: "<admin@l8cd.it>",
       to: email,
       subject: "Ordine Andato a buon fine",
       html: `
@@ -54,13 +54,13 @@ const checkoutAdmin = async (req, res) => {
 
   try {
     await AdminTransporter.sendMail({
-      from: '"Il tuo ordine da L8CD" <ordini@l8cd.it>',
+      from: "<admin@l8cd.it>",
       to: email,
-      subject: "Ordine Andato a buon fine",
+      subject: "Nuovo ordine",
       html: `
-        <p>Ciao ${name}! Grazie per aver effettuato l'ordine da noi. Ecco un riepilogo:</p>
+        <p>Hai rcevuto un nuovo ordine</p>
         <ul>${itemList}</ul>
-        <p>A presto!</p>
+        <p>Spediscilo presto</p>
         <p>Totale: ${total}€</p>
       `,
     });
