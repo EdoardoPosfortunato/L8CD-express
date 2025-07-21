@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { systemPrompt } from "../prompt/systemPrompt";
+import { systemPrompt } from "../prompt/systemPrompt.js";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
