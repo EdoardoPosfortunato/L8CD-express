@@ -90,6 +90,7 @@ const storeInvoice = (req, res) => {
     custom_name,
     custom_email,
     custom_address,
+    costum_cell,
     total_amount,
     payment_method,
     shipping_address,
@@ -105,16 +106,17 @@ const storeInvoice = (req, res) => {
       custom_name,
       custom_email,
       custom_address,
+      costum_cell,
       total_amount,
       payment_method,
       shipping_address,
       shipping_method,
       tracking_number,
       coupon_id, status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
 
-  const valuesInvoice = [custom_name, custom_email, custom_address, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status];
+  const valuesInvoice = [custom_name, custom_email, custom_address, costum_cell, total_amount, payment_method, shipping_address, shipping_method, tracking_number, coupon_id, status];
 
   connection.query(sqlInvoice, valuesInvoice, (err, results) => {
     if (err) {
