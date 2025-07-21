@@ -1,7 +1,7 @@
 import connection from "../db.js";
 
 const index = (req, res, next) => {
-  const { gender, isNew, minPrice, maxPrice, brand, color, q } = req.query;
+  const { gender, isNew, minPrice, maxPrice, brand, color, q, onlyDiscounted } = req.query;
 
   let sql = "SELECT * FROM products";
   let conditions = [];
@@ -43,9 +43,14 @@ const index = (req, res, next) => {
     params.push("2025-06-06");
   }
 
+  if (onlyDiscounted === "true") {
+    conditions.push("discount_price IS NOT NULL AND discount_price > 0")
+  }
+
   if (conditions.length > 0) {
     sql += " WHERE " + conditions.join(" AND ");
   }
+
 
   connection.query(sql, params, (err, result) => {
     if (err) return next(new Error(err));
@@ -56,7 +61,14 @@ const index = (req, res, next) => {
     }));
 
     res.status(200).json({
-      info: isNew === "true" ? "Aggiunti di recente" : gender === "offerte" ? "Scarpe in offerta (prezzo < 100)" : gender ? `Scarpe per genere: ${gender}` : "Tutte le scarpe",
+      info:
+        isNew === "true"
+          ? "Aggiunti di recente"
+          : onlyDiscounted === "true"
+          ? "Scarpe in offerta"
+          : gender
+          ? `Scarpe per genere: ${gender}`
+          : "Tutte le scarpe",
       totalcount: shoes.length,
       data: shoes,
     });
