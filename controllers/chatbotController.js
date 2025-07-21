@@ -5,6 +5,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 let chatHistory = [{ role: "user", parts: [{ text: systemPrompt }] }];
 
+
 export const chatWithBot = async (req, res) => {
   const { message } = req.body;
 
